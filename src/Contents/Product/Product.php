@@ -96,7 +96,7 @@ class Product extends BaseContent
         'identifierExists', 'includedDestinations', 'installment', 'isBundle',
         'loyaltyPoints', 'material', 'maxEnergyEfficiencyClass', 'maxHandlingTime', 'minEnergyEfficiencyClass', 'minHandlingTime',
         'mobileLink', 'multipack', 'pattern',
-        'shippingHeight', 'shippingLength', 'shippingWeight',
+        'shippingHeight', 'shippingLabel', 'shippingLength', 'shippingWeight',
         'sizeSystem', 'sizeType', 'taxCategory', 'taxes', 'transitTimeLabel', 'unitPricingBaseMeasure', 'unitPricingMeasure',
     ];
 
