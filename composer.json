@@ -1,0 +1,41 @@
+{
+    "name": "moirei/laravel-google-merchant-api",
+    "description": "Laravel Google Merchant Products API for Google Shopping.",
+    "homepage": "https://github.com/augustusnaz/laravel-google-merchant-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Augustus Okoye",
+            "email": "augustusokoye@moirei.com",
+            "role": "Developer"
+        }
+    ],
+    "keywords":[
+        "Laravel",
+        "Google Merchant API",
+        "Google Shopping API"
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "illuminate/support": "~5.0",
+        "illuminate/cache": "~5.0",
+        "guzzlehttp/guzzle":"~5.3|~6.0",
+        "google/apiclient": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MOIREI\\GoogleMerchantApi\\": "src"
+        }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MOIREI\\GoogleMerchantApi\\GoogleMerchantApiServiceProvider"
+            ],
+            "aliases": {
+                "ProductsApi": "MOIREI\\GoogleMerchantApi\\Facades\\ProductsApi"
+            }
+        }
+    }
+}
