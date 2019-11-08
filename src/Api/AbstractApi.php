@@ -108,6 +108,11 @@ abstract class AbstractApi{
             'Content-Type' => 'application/json',
         ]);
 
+		if(!($client_credentials = base_path( config('laravel-google-merchant-api.client_credentials_path') ))){
+			$this->client = new Client($client_config);
+			return;
+		}
+
 
 		$client = new \Google_Client();
 		$client->setHttpClient( new Client($client_config) );
@@ -116,7 +121,7 @@ abstract class AbstractApi{
 			$client->setApplicationName($app_name);
 		}
 
-        $client->setAuthConfig( base_path( config('laravel-google-merchant-api.client_credentials_path') ) );
+        $client->setAuthConfig( $client_credentials );
         $client->addScope('https://www.googleapis.com/auth/content');
 
 		$this->client = $client->authorize();

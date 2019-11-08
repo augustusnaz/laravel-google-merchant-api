@@ -75,7 +75,9 @@ class BaseContent
      * @return array
      */
     public function get(){
-        return array_filter(collect($this->attributes)->only($this->allowed_attributes)->all());
+        return array_filter(collect($this->attributes)->only($this->allowed_attributes)->all(), function($value){
+            return !($value === null) && !($value === '') && !($value === []);
+        });
     }
 
     /**
@@ -91,7 +93,9 @@ class BaseContent
                 $attributes[ $key ] = $this->$attributeFunc();
             }
         }
-        return array_filter($attributes);
+        return array_filter($attributes, function($value){
+            return !($value === null) && !($value === '') && !($value === []);
+        });
     }
 
     /**
