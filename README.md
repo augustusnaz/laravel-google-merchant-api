@@ -1,6 +1,6 @@
 # Laravel Google API
 
-A sweet package for managing Google Merchant Center product feeds for Google Shopping. This package is prepared to implement the advanced [Content API](https://developers.google.com/shopping-content/v2.1/quickstart) for Merchants.
+A sweet package for managing Google Merchant Center feeds for Google Shopping. This package is prepared to implement the advanced [Content API](https://developers.google.com/shopping-content/v2.1/quickstart) for Merchants.
 
 
 
@@ -36,7 +36,7 @@ OrderApi::list()->then(function($response){
 });
 
 
-OrderApi::scout(); // Scount and fire event
+OrderApi::scout(); // Scout and fire event
 ```
 
 
@@ -45,11 +45,11 @@ OrderApi::scout(); // Scount and fire event
 
 * **Products API**
   * Implements the `insert`, `get`, `delete` and `list` API calls
-  * Define schema interfaces for directly working with eloquent models (a product model)
+  * Uses defined schema interface for directly working with eloquent models (a product model)
   * Event listeners to respond to changes made to eloquent models, and `insert`  them automatically
 * **Orders API**
   * Implements the `acknowledge`, `cancel`, `cancelLineItem`, `rejectReturnLineItem`, `returnRefundLineItem`, `get` and `list` API calls.
-  * Internal schedule to scout un-acknowledged orders and fires an event. This means new orders on your Google Shopping can be automatically acknowledged and registered.
+  * Internal schedule scouts un-acknowledged orders and fires an event. This means new orders on your Google Shopping can be automatically acknowledged and registered.
   * Includes sandbox functions for `testOrders`.
 
 
@@ -94,17 +94,17 @@ php artisan vendor:publish --provider=MOIREI\GoogleMerchantApi\GoogleMerchantApi
 
 ### Product API
 
-The Google Merchant contents can be queried via the `insert`, `get`, `delete`, and `list` methods. The product content is contained and handled via the `Product` class. An instance of this class can be passed directly or resolved in a Closure callback. Furthermore, an instance can be population by
+The Google Merchant contents can be queried via the `insert`, `get`, `delete`, and `list` methods. The product content is contained and handled via the `Product` class. An instance of this class can be passed directly or resolved in a Closure callback. An instance can be population by
 
-* Accessing underlying attributes. See [special functions](doc/prodcut-conent-special-methods)
+* Directly accessing underlying attributes. See [special functions](doc/prodcut-conent-special-methods)
 * Passing an eloquent model, or by
 * Passing a raw array
 
-To pass and array a model, the attributes relationships must be defined in the config.
+To pass an array or a model, the attributes relationships must be defined in the config.
 
 #### Insert
 
-The insert method creates a new content, and also updates an old content if the `channel`, `contentLanguage`, `targetCountry` and `offerId` are the same. 
+The insert method creates a new content, as well as updates an old content if the `channel`, `contentLanguage`, `targetCountry` and `offerId` are the same. 
 
 ```php
 use MOIREI\GoogleMerchantApi\Contents\Product\Product;
@@ -175,11 +175,11 @@ public function getGmPriceAttribute(){
 }
 ```
 
-For the setting custom Product contents (`customAttributes`), you're better off using the `custom()` method. Likewise for `availabilityDate` use the `availabilityUntil()` method.
+For setting custom Product contents (`customAttributes`), you're probably better off using the `custom()` method. Likewise for `availabilityDate` use the `availabilityUntil()` method.
 
 **With Events & Listeners**:
 
-The provided event and listener can be setup such when your application creates of updates a model, the product content is automatically inserted. 
+The provided event and listener can be setup such that when your application creates or updates a model, the product content is automatically inserted. 
 
 To set this up, add the following snippet to your eloquent mode.  The `product` variable can be a model or an array.
 
@@ -315,11 +315,11 @@ protected $listen = [
 
 # Order API
 
-***Please note that these implementations have not been fully tested***
+***Please note that these implementations have not been properly tested.***
 
 #### Using the API methods
 
-The `acknowledge`, `cancel`, `cancelLineItem`, `rejectReturnLineItem`, `returnRefundLineItem`, `get`, `list` methods are currently implemented (but not fully tested) for interacting with your Google Merchant.
+The `acknowledge`, `cancel`, `cancelLineItem`, `rejectReturnLineItem`, `returnRefundLineItem`, `get`, `list` methods are currently implemented for interacting with your Google Merchant.
 
 The format for using these methods are standard across the entire package. For example, an order can be acknowledged by
 
@@ -344,7 +344,7 @@ Additionally the `listAcknowledged` method is provided so one can list acknowled
 
 If `schedule_orders_check` is set as true in the config, the package will regularly scout un-acknowledged orders and will fire a `\MOIREI\GoogleMerchantApi\Events\NewOrdersScoutedEvent` event. This event includes an **array** of orders of class `\MOIREI\GoogleMerchantApi\Contents\Order`. The orders are structured as per the [Order Resource](https://developers.google.com/shopping-content/v2/reference/v2.1/orders#resource).
 
-Example response in your listener:
+Example handle in your listener:
 
 ```php
 use MOIREI\GoogleMerchantApi\Events\NewOrdersScoutedEvent;
@@ -356,9 +356,9 @@ public function handle(NewOrdersScoutedEvent $event)
     foreach($event->orders as $gm_order){
         OrderApi::acknowledge($gm_order);
 
-        $gm_order = $gm_order->all(); // get all attributes, included
+        $gm_order = $gm_order->all(); // get all attributes, including mutated attributes
         foreach($gm_order['lineItems'] as $line_item){
-            $model = $line_item['model'];
+            $model = $line_item['model']; // retrieves model
             $quantity = $line_item['quantityOrdered'];
             $shipping = $line_item['shippingDetails'];
             $delivery_date = $shipping['deliverByDate']->diffForHumans();
@@ -375,7 +375,7 @@ public function handle(NewOrdersScoutedEvent $event)
 
 * Accessing the `lineItems` will automatically resolve and attach the corresponding model to each item. Of course this assumes your inserted products' `offerId` correspond to the model's ID & primary key.
 * If you haven't already started Laravel scheduler, you'll need to add the following Cron entry to your server. `* * * * * php artisan schedule:run >> /dev/null 2>&1`.
-* It's important you test that the scheduler is set up properly. For this reason the `MOIREI\GoogleMerchantApi\Events\OrderContentScoutedEvent` event is provided. If `debug_scout` is set to true in the config, this event is fired whenever the scheduler fires.
+* It's important you test that the scheduler is set up correctly. For this reason, the `MOIREI\GoogleMerchantApi\Events\OrderContentScoutedEvent` event is provided. If `debug_scout` is set to true in the config, this event is fired whenever the scheduler fires.
 
 #### Sandboxing
 
@@ -396,9 +396,9 @@ You may use
 OrderApi::sandbox()->testCreate();
 ```
 
-to use a set example.
+to use a preset example.
 
-Implement sandbox actions: 
+Implemented sandbox actions: 
 
 | Function       | Sandbox Action   |
 | -------------- | ---------------- |
@@ -427,7 +427,7 @@ Methods that throw exceptions
 
   throws `MOIREI\GoogleMerchantApi\Exceptions\ProductContentAttributesUndefined`
 
-* The `insert`, `get`, `delete`, `list`, `listAcknowledged` and `scout` methods in the API classes will throw `GuzzleHttp\Exception\ClientException` if the client request is corrupted, fails or not authorised. 
+* The `insert`, `get`, `delete`, `list`, `listAcknowledged` and `scout` methods in the API classes will throw `GuzzleHttp\Exception\ClientException` if the client request is corrupted, fails, not defined or not authorised. 
 
 * The `MOIREI\GoogleMerchantApi\Exceptions\Invalid**Input` exceptions are thrown if an unresolvable entity is passed as a content attribute.
 
@@ -437,9 +437,10 @@ Exceptions should be handled using the `catch` function. If making synchronous c
 
 ## Design Notes
 
-* Insert, List, Get, Delete methods always return a clone of the original instance if using the default asynchronous feature. This allows the then, otherwise, and catch callbacks of multiple requests to not override. These methods return a Guzzle response if set to sync mode.
-* If the delete method is called and the resolved content ID is invalid, it returns without making any requests or throwing any errors. If the get method, it returns a list of products. A valid content ID follows the pattern *online:en:AU:1* i.e. `channel:contentLanguage:targetCountry:offerId`. This ID is of course auto generated; and the attributes, except for `offerId`, have default values.
-* Requests can take up to 2 hours before they reflect on Google Merchant Center.
+* Insert, List, Get, Delete methods always return a clone of the original instance if using the default asynchronous feature. This allows the then, otherwise, and catch callbacks of multiple requests to not override. These methods return a Guzzle response if set to synchronous mode.
+* If the delete method is called and the resolved content ID is invalid, it returns without making any requests or throwing any errors. If the get method, it returns a list of products or orders. 
+* A valid product content ID follows the pattern *online:en:AU:1* i.e. `channel:contentLanguage:targetCountry:offerId`. This ID is of course auto generated; and the attributes, except for `offerId`, have default values.
+* Requests can take up to 2 hours before they reflect on Google Merchant Center. Patience!
 * Unlike the ProductApi or OrderApi classes, the events constructor may take a Model, array or callback.
 * Calling the `all` method on a `Product`, `Order` or any content class will resolve all mutated attributes. e.g. `$order['lineItems'][0]['shippingDetails']['deliverByDate']` returns a `Carbon`.
 
@@ -461,13 +462,13 @@ try{
 }
 ```
 
-**Note**: In this case, the ProductApi and OrderApi methods such as `insert`, `get`, `delete`, and `list`, returns a Guzzle response when called asynchronously (rather than an instance of `ProductApi` or `OrderApi`. This means your exception blocks should be wrapped around requests.
+**Note**: In this case, methods such as `insert`, `get`, `delete`, and `list`, etc, returns a Guzzle response when called asynchronously (rather than an instance of `ProductApi` or `OrderApi`. This means your exception blocks should be wrapped around requests.
 
 
 
 ## Contributing
 
-This package is intended to provide a Laravel solution for the Google Shopping API for Google Merchant. Currently, only the Product Content has been adequately implemented and tested. For orders, refunds, etc., contents, ideas, and pull-requests are welcome.
+This package is intended to provide a Laravel solution for the Google Shopping API for Google Merchant. Currently, only the Product Content has been adequately implemented and tested. For orders, refunds, etc., ideas and pull-requests are welcome.
 
 ### 
 
