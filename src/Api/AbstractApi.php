@@ -108,23 +108,24 @@ abstract class AbstractApi{
             'Content-Type' => 'application/json',
         ]);
 
-		if(!($client_credentials = base_path( config('laravel-google-merchant-api.client_credentials_path') ))){
+		$client_credentials_path = base_path( config('laravel-google-merchant-api.client_credentials_path') );
+
+		if((strpos($client_credentials_path, '.json') !== false) && file_exists($client_credentials_path)){
+			$client = new \Google_Client();
+			$client->setHttpClient( new Client($client_config) );
+
+			if($app_name = config('laravel-google-merchant-api.app_name', false)){
+				$client->setApplicationName($app_name);
+			}
+
+			$client->setAuthConfig( $client_credentials_path );
+			$client->addScope('https://www.googleapis.com/auth/content');
+
+			$this->client = $client->authorize();
+		}else{
 			$this->client = new Client($client_config);
-			return;
 		}
 
-
-		$client = new \Google_Client();
-		$client->setHttpClient( new Client($client_config) );
-
-		if($app_name = config('laravel-google-merchant-api.app_name', false)){
-			$client->setApplicationName($app_name);
-		}
-
-        $client->setAuthConfig( $client_credentials );
-        $client->addScope('https://www.googleapis.com/auth/content');
-
-		$this->client = $client->authorize();
 	}
 
 	/**
