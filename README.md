@@ -111,11 +111,13 @@ use MOIREI\GoogleMerchantApi\Contents\Product\Product;
 
 ...
 $attributes = [
-    'id' => 1,
-    'name' => 'Product 1',
+    'id' => 1, // maps to offerId (if set in config)
+    'name' => 'Product 1', // likewise maps to title
 ];
 ProductApi::insert(function($product) use($attributes){
-    $product->with($attributes);
+    $product->with($attributes)
+        	->link('https://moirei.com/mg001')
+        	->price(60, 'USD');
 })->then(function($data){
     echo 'Product inserted';
 })->otherwise(function(){
