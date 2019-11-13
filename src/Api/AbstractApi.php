@@ -97,10 +97,10 @@ abstract class AbstractApi{
 			$version = $version . 'sandbox';
 		}
 
-		$client_config = array_filter( collect(config('laravel-google-merchant-api.client_config'))->only([
+		$client_config = collect(config('laravel-google-merchant-api.client_config'))->only([
 			'timeout', 'headers', 'proxy',
 			'allow_redirects', 'http_errors', 'decode_content', 'verify', 'cookies',
-		])->all() );
+		])->filter()->all();
 		$client_config['base_uri'] = "https://www.googleapis.com/content/$version/$this->merchantId/";
 
 		$client_config['headers'] = array_merge($client_config['headers']?? [], [
