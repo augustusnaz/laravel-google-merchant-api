@@ -633,9 +633,7 @@ class Product extends BaseContent
     /**
      * Set the product's custom values.
      *
-     * @param  array $custom
-     * @param  mix $value
-     * @param  string $type
+     * @param  array $customValues
      * @return $this
      */
     public function customValues(array $customValues)
