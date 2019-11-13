@@ -321,7 +321,7 @@ class OrderApi extends AbstractApi{
      */
     static protected function getInstance(OrderApi $orderApi){
         if($orderApi->async){
-            // duplicate since so that callbacks are not overridden
+            // duplicate so that callbacks are not overridden
             return clone $orderApi;
         }else{
             return $orderApi;

@@ -127,7 +127,7 @@ class ProductApi extends AbstractApi{
      */
     static protected function getInstance(ProductApi $productApi){
         if($productApi->async){
-            // duplicate since so that callbacks are not overridden
+            // duplicate so that callbacks are not overridden
             return clone $productApi;
         }else{
             return $productApi;
