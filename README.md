@@ -19,9 +19,9 @@ ProductApi::insert(function($product){
         	->price(10)
         	->custom('purchase_quantity_limit', 1000)
             ->availabilityDate( today()->addDays(7) );
-})->then(function(){
+})->then(function($response){
     echo 'Product inserted';
-})->otherwise(function(){
+})->otherwise(function($response){
     echo 'Insert failed';
 })->catch(function($e){
     echo($e->getResponse()->getBody()->getContents());
@@ -29,7 +29,7 @@ ProductApi::insert(function($product){
 
 OrderApi::list()->then(function($response){
     //
-})->otherwise(function(){
+})->otherwise(function($response){
     echo 'List failed';
 })->catch(function($e){
     echo($e->getResponse()->getBody()->getContents());
@@ -96,7 +96,7 @@ php artisan vendor:publish --provider=MOIREI\GoogleMerchantApi\GoogleMerchantApi
 
 The Google Merchant contents can be queried via the `insert`, `get`, `delete`, and `list` methods. The product content is contained and handled via the `Product` class. An instance of this class can be passed directly or resolved in a Closure callback. An instance can be population by
 
-* Directly accessing underlying attributes. See [special functions](doc/prodcut-conent-special-methods)
+* Directly accessing underlying attributes. See [special functions](doc/prodcut-conent-special-methods.md).
 * Passing an eloquent model, or by
 * Passing a raw array
 
@@ -156,7 +156,7 @@ ProductApi::insert($product)->catch(function($e){
 });
 ```
 
-The model `attributes` values must be defined as per the attributes map in the config. For accessing undefined models attributes, use Accessors and customer Model attributes:
+The model `attributes` values must be defined as per the attributes map in the config. For accessing undefined models attributes, use Accessors and custom Model attributes:
 
 ```php
 protected $appends = [
@@ -201,7 +201,7 @@ protected static function boot() {
     // when a product is created
     static::created(function(Product $product){
         // perhaps a logic to ignore drafts and private products
-        if($product->is_active){
+        if($product->is_active && (config('app.env') === 'production')){
         	event(new ProductCreatedOrUpdatedEvent($product));   
         }
     });
@@ -209,7 +209,7 @@ protected static function boot() {
     // when a product is updated
     static::updated(function(Product $product){
         // perhaps a logic to ignore drafts and private products
-        if($product->is_active){
+        if($product->is_active && (config('app.env') === 'production')){
         	event(new ProductCreatedOrUpdatedEvent(function($gm_product) use ($product){
                 $gm_product->with($product)
                     	   ->preorder()
@@ -292,7 +292,9 @@ protected static function boot() {
         
     // when a product is deleted
     static::deleted(function(Product $product){
-        event(new ProductDeletedEvent($product));
+        if(config('app.env') === 'production'){
+        	event(new ProductDeletedEvent($product)); 
+        }
     });
 }
 ```
@@ -309,7 +311,6 @@ protected $listen = [
     ProductDeletedEvent::class => [
         ProductDeletedListener::class,
     ],
-
 ];
 ```
 
@@ -427,22 +428,22 @@ Methods that throw exceptions
 
 * `MOIREI\GoogleMerchantApi\Contents\Product::with()`
 
-  throws `MOIREI\GoogleMerchantApi\Exceptions\ProductContentAttributesUndefined`
+  throws `MOIREI\GoogleMerchantApi\Exceptions\ProductContentAttributesUndefined` if the supplied attributes is not a Model or array.
 
 * The `insert`, `get`, `delete`, `list`, `listAcknowledged` and `scout` methods in the API classes will throw `GuzzleHttp\Exception\ClientException` if the client request is corrupted, fails, not defined or not authorised. 
 
 * The `MOIREI\GoogleMerchantApi\Exceptions\Invalid**Input` exceptions are thrown if an unresolvable entity is passed as a content attribute.
 
-Exceptions should be handled using the `catch` function. If making synchronous calls, use the try-catch block.
+Exceptions should be handled using the `catch` function. If making synchronous calls, use the try-catch block. You'd be well advised to always catch requests (and notify your business logic), seeing that Google has a million reasons to deny any request.
 
 
 
 ## Design Notes
 
-* Insert, List, Get, Delete methods always return a clone of the original instance if using the default asynchronous feature. This allows the then, otherwise, and catch callbacks of multiple requests to not override. These methods return a Guzzle response if set to synchronous mode.
+* Insert, List, Get, Delete methods will always return a clone of the original instance if using the default asynchronous feature. This allows the then, otherwise, and catch callbacks of multiple requests to not override. These methods return a Guzzle response if set to synchronous mode.
 * If the delete method is called and the resolved content ID is invalid, it returns without making any requests or throwing any errors. If the get method, it returns a list of products or orders. 
 * A valid product content ID follows the pattern *online:en:AU:1* i.e. `channel:contentLanguage:targetCountry:offerId`. This ID is of course auto generated; and the attributes, except for `offerId`, have default values.
-* Requests can take up to 2 hours before they reflect on Google Merchant Center. Patience!
+* Requests can take up to 2 hours before they reflect on your Google Merchant Center. Patience!
 * Unlike the ProductApi or OrderApi classes, the events constructor may take a Model, array or callback.
 * Calling the `all` method on a `Product`, `Order` or any content class will resolve all mutated attributes. e.g. `$order['lineItems'][0]['shippingDetails']['deliverByDate']` returns a `Carbon`.
 
@@ -472,7 +473,7 @@ try{
 
 This package is intended to provide a Laravel solution for the Google Shopping API for Google Merchant. Currently, only the Product Content has been adequately implemented and tested. For orders, refunds, etc., ideas and pull-requests are welcome.
 
-### 
+
 
 
 ## Credits
