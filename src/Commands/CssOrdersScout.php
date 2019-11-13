@@ -38,6 +38,10 @@ class CssOrdersScout extends Command
      */
     public function handle()
     {
-        OrderApi::scout();
+        try{
+            OrderApi::scout();
+        }catch(\GuzzleHttp\Exception\ClientException $e){
+            //
+        }
     }
 }

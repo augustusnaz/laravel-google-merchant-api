@@ -278,24 +278,24 @@ class OrderApi extends AbstractApi{
 
     /**
      * Scout Google Merchant for un-acknowledged orders and take actions
+     *
+	 * @throws \GuzzleHttp\Exception\ClientException
      */
     public function scout(){
-        try{
-            $response = $this->sync()->list();
-            if($response->getStatusCode() === 200){
-                $data = json_decode($response->getBody(), true);
-                if(count($resource)){
-                    $orders = array_map(function($resource){
-                        return (new Order)->with($resource);
-                    }, $data->resources);
-                    event(new NewOrdersScoutedEvent($orders));
-                }
-            }else{
-                //
+
+        $response = $this->sync()->list();
+        if($response->getStatusCode() === 200){
+            $data = json_decode($response->getBody(), true);
+            if(count($resource)){
+                $orders = array_map(function($resource){
+                    return (new Order)->with($resource);
+                }, $data->resources);
+                event(new NewOrdersScoutedEvent($orders));
             }
-        }catch(\GuzzleHttp\Exception\ClientException $e){
+        }else{
             //
         }
+
         if(config('laravel-google-merchant-api.contents.orders.debug_scout', false)){
             event(new OrderContentScoutedEvent());
         }
