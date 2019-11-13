@@ -83,7 +83,7 @@ php artisan vendor:publish --provider=MOIREI\GoogleMerchantApi\GoogleMerchantApi
 
 ## Setup & Authorisation
 
-* Follow the instructions [here](https://developers.google.com/shopping-content/v2.1/quickstart) and create a service account key. Create `storage/app/google-merchant-api/service-account-credentials.json` in your app root and store the downloaded json contents
+* Follow the instructions [here]( https://developers.google.com/shopping-content/v2/quickstart ) and create a service account key. Create `storage/app/google-merchant-api/service-account-credentials.json` in your app root and store the downloaded json contents
 * Obtain your numeric Merchant ID
 * Add your Merchant ID and the path to your service account credentials to the config
 * In the config, setup the attributes section in product content if you need to use arrays or models
