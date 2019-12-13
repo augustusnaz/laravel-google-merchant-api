@@ -107,9 +107,6 @@ To pass an array or a model, the attributes relationships must be defined in the
 The insert method creates a new content, as well as updates an old content if the `channel`, `contentLanguage`, `targetCountry` and `offerId` are the same. 
 
 ```php
-use MOIREI\GoogleMerchantApi\Contents\Product\Product;
-
-...
 $attributes = [
     'id' => 1, // maps to offerId (if set in config)
     'name' => 'Product 1', // likewise maps to title
@@ -137,7 +134,7 @@ $attributes = [
     'id' => 1,
     'name' => 'Product 1',
 ];
-$product = (new Product)->with($attributes);
+$product = (new GMProduct)->with($attributes);
 ```
 
 The `attributes` values must be defined as per the attributes map in the config.
@@ -145,7 +142,9 @@ The `attributes` values must be defined as per the attributes map in the config.
 **With Eloquent Models**:
 
 ```php
+use App\Models\Product;
 use MOIREI\GoogleMerchantApi\Contents\Product\Product as GMProduct;
+
 
 ...
 $model = Product::find(1);

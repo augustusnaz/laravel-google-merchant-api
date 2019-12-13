@@ -13,7 +13,8 @@
     "keywords":[
         "Laravel",
         "Google Merchant API",
-        "Google Shopping API"
+        "Google Shopping API",
+        "moirei"
     ],
     "require": {
         "php": ">=5.5.9",
