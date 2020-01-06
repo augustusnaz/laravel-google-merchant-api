@@ -113,11 +113,11 @@ class Product extends BaseContent
         $this->attributes['taxes'] = array();
 
         // Set defaults
-        $this->attributes['contentLanguage'] = config('laravel-google-merchant-api.contents.products.defaults.contentLanguage', 'en');
-        $this->attributes['targetCountry'] = config('laravel-google-merchant-api.contents.products.defaults.targetCountry', 'AU');
-        $this->attributes['channel'] = config('laravel-google-merchant-api.contents.products.defaults.channel', 'online');
-        $this->attributes['availability'] = config('laravel-google-merchant-api.contents.products.defaults.availability', 'in stock');
-        $this->attributes['condition'] = config('laravel-google-merchant-api.contents.products.defaults.condition', 'new');
+        foreach(config('laravel-google-merchant-api.contents.products.defaults', []) as $attribute => $default){
+            if(in_array($attribute, $this->allowed_attributes)){
+                $this->attributes[ $attribute ] = $default;
+            }
+        }
 
     }
 
