@@ -14,14 +14,14 @@
         "Laravel",
         "Google Merchant API",
         "Google Shopping API",
-        "moirei"
+        "moirei.com"
     ],
     "require": {
-        "php": ">=5.5.9",
-        "illuminate/support": "~5.0",
-        "illuminate/cache": "~5.0",
-        "guzzlehttp/guzzle":"~5.3|~6.0",
-        "google/apiclient": "^2.0"
+        "php": "^7.2",
+        "illuminate/support": "~5.0|^6.0",
+        "illuminate/cache": "~5.0|^6.0",
+        "guzzlehttp/guzzle":"~5.3|^6.5",
+        "google/apiclient": "^2.4"
     },
     "autoload": {
         "psr-4": {
