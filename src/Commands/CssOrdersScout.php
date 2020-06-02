@@ -19,7 +19,7 @@ class CssOrdersScout extends Command
      *
      * @var string
      */
-    protected $description = 'Cleanup expired carts';
+    protected $description = 'Scount Google Merchant for new orders';
 
     /**
      * Create a new command instance.
