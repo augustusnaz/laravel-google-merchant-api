@@ -70,6 +70,8 @@ class Product extends BaseContent
      * @var string  mobileLink
      * @var long    multipack
      * @var string  pattern
+     * @var array   productTypes
+     * @var array   productHighlights
      * @var array   shippingHeight
      * @var string  shippingLabel
      * @var array   shippingLength
@@ -95,7 +97,7 @@ class Product extends BaseContent
         'energyEfficiencyClass', 'excludedDestinations', 'expirationDate',
         'identifierExists', 'includedDestinations', 'installment', 'isBundle',
         'loyaltyPoints', 'material', 'maxEnergyEfficiencyClass', 'maxHandlingTime', 'minEnergyEfficiencyClass', 'minHandlingTime',
-        'mobileLink', 'multipack', 'pattern',
+        'mobileLink', 'multipack', 'pattern', 'productTypes', 'productHighlights',
         'shippingHeight', 'shippingLabel', 'shippingLength', 'shippingWeight',
         'sizeSystem', 'sizeType', 'taxCategory', 'taxes', 'transitTimeLabel', 'unitPricingBaseMeasure', 'unitPricingMeasure',
     ];
