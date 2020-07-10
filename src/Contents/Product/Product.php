@@ -364,9 +364,7 @@ class Product extends BaseContent
     }
 
     /**
-     * Set the product's sale price effective date.
-     *
-     * Date range during which the item is on sale.
+     * Append product's shipping.
      *
      * @param  Closure|ProductShipping|array $shipping
      * @return $this
