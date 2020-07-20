@@ -86,11 +86,18 @@ abstract class AbstractApi{
 	 * @param string $endpoint top-level endpoint, e.g. `products`
 	 * @param string $mode 'production', 'sandbox'
 	 */
-	public function __construct( $endpoint, $mode = 'production' ) {
+	public function __construct( $endpoint, $mode = 'production', $config = false) {
 
 		$this->endpoint = $endpoint;
-
-		$this->merchantId = config('laravel-google-merchant-api.merchant_id', '');
+		
+		// Set config options / defaults
+		if ($config) {
+			$this->merchantId = $config['merchantId'];
+			$client_credentials_path = base_path( $config['credentials_path'] );
+		} else {
+			$this->merchantId = config('laravel-google-merchant-api.merchant_id', '');
+			$client_credentials_path = base_path( config('laravel-google-merchant-api.client_credentials_path') );
+		}
 
 		$version = config('laravel-google-merchant-api.version', 'v2');
 		if($mode === 'sandbox'){
@@ -107,8 +114,6 @@ abstract class AbstractApi{
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ]);
-
-		$client_credentials_path = base_path( config('laravel-google-merchant-api.client_credentials_path') );
 
 		if((strpos($client_credentials_path, '.json') !== false) && file_exists($client_credentials_path)){
 			$client = new \Google_Client();
