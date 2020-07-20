@@ -12,10 +12,9 @@ class ProductApi extends AbstractApi{
 	 * Setup the resource api
 	 *
 	 */
-	public function __construct() {
-
-		parent::__construct( 'products' );
-    }
+	public function __construct($mode='production', $config=false) {
+		parent::__construct( 'products', $mode, $config );
+    	}
 
     /**
      * Insert product(s).
