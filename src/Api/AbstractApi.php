@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\RequestException;
 use Closure;
 use GuzzleHttp\Promise\Promise;
+use MOIREI\GoogleMerchantApi\Exceptions\InvalidMechantDetails;
 
 abstract class AbstractApi{
 
@@ -16,6 +17,13 @@ abstract class AbstractApi{
      * @var  string $endpoint
      */
     protected $endpoint;
+
+    /**
+     * Api client mode.
+     *
+     * @var  string $mode
+     */
+    protected $mode;
 
     /**
      * The GuzzleHttp client.
@@ -89,43 +97,19 @@ abstract class AbstractApi{
 	public function __construct( $endpoint, $mode = 'production' ) {
 
 		$this->endpoint = $endpoint;
+		$this->mode = $mode;
 
-		$this->merchantId = config('laravel-google-merchant-api.merchant_id', '');
+		if(!is_string($config = config('laravel-google-merchant-api.default_merchant'))){
 
-		$version = config('laravel-google-merchant-api.version', 'v2');
-		if($mode === 'sandbox'){
-			$version = $version . 'sandbox';
+			// Backwords compatible
+			// Default to 1.0.3 config if `default_merchant` is not set
+			$config = [
+				'app_name' => config('laravel-google-merchant-api.app_name'),
+				'merchant_id' => config('laravel-google-merchant-api.merchant_id'),
+				'client_credentials_path' => config('laravel-google-merchant-api.client_credentials_path'),
+			];
 		}
-
-		$client_config = collect(config('laravel-google-merchant-api.client_config'))->only([
-			'timeout', 'headers', 'proxy',
-			'allow_redirects', 'http_errors', 'decode_content', 'verify', 'cookies',
-		])->filter()->all();
-		$client_config['base_uri'] = "https://www.googleapis.com/content/$version/$this->merchantId/";
-
-		$client_config['headers'] = array_merge($client_config['headers']?? [], [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ]);
-
-		$client_credentials_path = base_path( config('laravel-google-merchant-api.client_credentials_path') );
-
-		if((strpos($client_credentials_path, '.json') !== false) && file_exists($client_credentials_path)){
-			$client = new \Google_Client();
-			$client->setHttpClient( new Client($client_config) );
-
-			if($app_name = config('laravel-google-merchant-api.app_name', false)){
-				$client->setApplicationName($app_name);
-			}
-
-			$client->setAuthConfig( $client_credentials_path );
-			$client->addScope('https://www.googleapis.com/auth/content');
-
-			$this->client = $client->authorize();
-		}else{
-			$this->client = new Client($client_config);
-		}
-
+		$this->merchant($config);
 	}
 
 	/**
@@ -135,6 +119,34 @@ abstract class AbstractApi{
 	 */
 	public function sync($sync = true){
 		$this->async = !$sync;
+
+		return $this;
+	}
+
+	/**
+	 * Switch merchant.
+	 * Either use preconfigured merchant or provide new credentials.
+	 *
+	 * @param string|array $config
+	 * @throws \MOIREI\GoogleMerchantApi\Exceptions\InvalidMechantDetails
+	 */
+	public function merchant($config){
+		if(is_string($config)){
+			$config = config("laravel-google-merchant-api.merchants.$config");
+		}
+		elseif(!is_array($config)){
+			throw new InvalidMechantDetails;
+		}
+
+		$app_name = data_get($config, 'app_name');
+		$merchant_id = data_get($config, 'merchant_id');
+		$client_credentials_path = data_get($config, 'client_credentials_path');
+
+		if(!($merchant_id && $client_credentials_path)){
+			throw new InvalidMechantDetails;
+		}
+
+		$this->client = $this->initClient($app_name, $merchant_id, $client_credentials_path);
 
 		return $this;
 	}
@@ -366,6 +378,49 @@ abstract class AbstractApi{
 		$this->then = null;
 		$this->otherwise = null;
 		$this->catch = null;
+	}
+
+	/**
+	 * Switch between merchants.
+	 * Either use preconfigured merchant or provide new credentials.
+	 *
+	 * @param string $app_name
+	 * @param string $merchant_id
+	 * @param string $client_credentials_path
+	 * @return \GuzzleHttp\Client
+	 */
+	protected function initClient($app_name, $merchant_id, $client_credentials_path): Client{
+
+		$version = config('laravel-google-merchant-api.version', 'v2');
+
+		if($this->mode === 'sandbox'){
+			$version = $version . 'sandbox';
+		}
+
+		$client_config = collect(config('laravel-google-merchant-api.client_config'))->only([
+			'timeout', 'headers', 'proxy',
+			'allow_redirects', 'http_errors', 'decode_content', 'verify', 'cookies',
+		])->filter()->all();
+		$client_config['base_uri'] = "https://www.googleapis.com/content/$version/$merchant_id/";
+
+		$client_config['headers'] = array_merge($client_config['headers']?? [], [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ]);
+
+		if((strpos($client_credentials_path, '.json') !== false) && file_exists($client_credentials_path)){
+			$client = new \Google_Client();
+			$client->setHttpClient( new Client($client_config) );
+
+			$client->setApplicationName($app_name);
+
+			$client->setAuthConfig( $client_credentials_path );
+			$client->addScope('https://www.googleapis.com/auth/content');
+
+			return $client->authorize();
+		}else{
+			return new Client($client_config);
+		}
 	}
 
 }

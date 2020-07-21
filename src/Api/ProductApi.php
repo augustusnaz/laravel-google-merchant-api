@@ -11,10 +11,11 @@ class ProductApi extends AbstractApi{
 	/**
 	 * Setup the resource api
 	 *
+	 * @param string $endpoint
+	 * @param string $mode 'production', 'sandbox'
 	 */
-	public function __construct() {
-
-		parent::__construct( 'products' );
+	public function __construct($endpoint = 'products', $mode = 'production') {
+		parent::__construct( $endpoint, $mode );
     }
 
     /**

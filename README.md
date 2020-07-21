@@ -51,6 +51,7 @@ OrderApi::scout(); // Scout and fire event
   * Implements the `acknowledge`, `cancel`, `cancelLineItem`, `rejectReturnLineItem`, `returnRefundLineItem`, `get` and `list` API calls.
   * Internal schedule scouts un-acknowledged orders and fires an event. This means new orders on your Google Shopping can be automatically acknowledged and registered.
   * Includes sandbox functions for `testOrders`.
+* Multiple Merchants (1.1.0)
 
 
 
@@ -91,6 +92,39 @@ php artisan vendor:publish --provider=MOIREI\GoogleMerchantApi\GoogleMerchantApi
 
 
 ## Usage
+
+### Multiple Merchants
+
+From `1.1.0` we can now define multiple merchants and switch between them by simply calling the `merchant` method from either the Order or Product API class.
+
+```php
+ProductApi::merchant('my-pet-store')->insert($product);
+```
+
+```php
+// config/laravel-google-merchant-api.php
+...
+    'merchants' => [
+        'my-pet-store' => [
+			'app_name' => config('app.name'),
+			'merchant_id' => '000000000',
+			'client_credentials_path' => 'storage/.../my-pet-store-credentials.json',
+		]
+    ],
+...
+```
+
+Or
+
+```php
+ProductApi::merchant([
+    'app_name' => 'My Pet Store',
+    'merchant_id' => '000000000',
+    'client_credentials_path' => 'storage/.../my-pet-store-credentials.json'
+])->insert($product);
+```
+
+
 
 ### Product API
 
@@ -432,6 +466,8 @@ Methods that throw exceptions
 * The `insert`, `get`, `delete`, `list`, `listAcknowledged` and `scout` methods in the API classes will throw `GuzzleHttp\Exception\ClientException` if the client request is corrupted, fails, not defined or not authorised. 
 
 * The `MOIREI\GoogleMerchantApi\Exceptions\Invalid**Input` exceptions are thrown if an unresolvable entity is passed as a content attribute.
+
+* The `merchant` method throws `MOIREI\GoogleMerchantApi\Exceptions\InvalidMechantDetails` if unable to resolve a merchant ID or credentials path.
 
 Exceptions should be handled using the `catch` function. If making synchronous calls, use the try-catch block. You'd be well advised to always catch requests (and notify your business logic), seeing that Google has a million reasons to deny any request.
 

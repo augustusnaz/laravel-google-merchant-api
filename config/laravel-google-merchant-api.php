@@ -4,36 +4,13 @@ return [
 
     /**
      * -----------------------------------------------------------------------
-     * Application Name
+     * Default merchant
      * -----------------------------------------------------------------------
      *
-     * The application name to pass to the Google client.
-     * Set as null to ignore.
+     * Set the default merchant from below configurations.
      */
 
-    'app_name' => config('app.name'),
-
-    /**
-     * -----------------------------------------------------------------------
-     * Service Account
-     * -----------------------------------------------------------------------
-     *
-     * The base path url to json file that holds your service account credentials.
-     * This file should only be accessible to your application.
-     */
-
-    'client_credentials_path' => 'storage/app/google-merchant-api/service-account-credentials.json',
-
-    /**
-     * -----------------------------------------------------------------------
-     * Google Merchant ID
-     * -----------------------------------------------------------------------
-     *
-     * Your Merchant ID for Google Shopping API.
-     * This is a numeric value.
-     */
-
-    'merchant_id' => env('GOOGLE_MERCHANT_ID', ''),
+    'default_merchant' => 'moirei',
 
     /**
      * -----------------------------------------------------------------------
@@ -58,6 +35,51 @@ return [
     'client_config' => [
         'timeout' => 7.0, // in seconds, allow sufficient time on each call since instantiating each request has to also authenticate
         'proxy' => null, // null values are ignored
+    ],
+
+    /**
+     * -----------------------------------------------------------------------
+     * Client Config
+     * -----------------------------------------------------------------------
+     *
+     * Optional configurations for the guzzle client.
+     *
+     * Accepts only 'timeout', 'headers', 'proxy', 'allow_redirects', 'http_errors', 'decode_content', 'verify', 'cookies'
+     */
+
+    'merchants' => [
+        'moirei' => [
+			/**
+			 * -----------------------------------------------------------------------
+			 * Application Name
+			 * -----------------------------------------------------------------------
+			 *
+			 * The application name to pass to the Google client.
+			 * Set as null to ignore.
+			 */
+			'app_name' => config('app.name'),
+
+			/**
+			 * -----------------------------------------------------------------------
+			 * Google Merchant ID
+			 * -----------------------------------------------------------------------
+			 *
+			 * Your Merchant ID for Google Shopping API.
+			 * This is a numeric value.
+			 */
+			'merchant_id' => env('GOOGLE_MERCHANT_ID_MOIREI', ''),
+
+			/**
+			 * -----------------------------------------------------------------------
+			 * Service Account
+			 * -----------------------------------------------------------------------
+			 *
+			 * The base path url to json file that holds your service account credentials.
+			 * This file should only be accessible to your application.
+			 */
+
+			'client_credentials_path' => 'storage/app/google-merchant-api/service-account-credentials.json',
+		]
     ],
 
     /**
