@@ -55,6 +55,12 @@ OrderApi::scout(); // Scout and fire event
 
 
 
+## Updating to 1.1.x
+
+Although backwards compatible, be sure to update your config to be able to use multiple merchants.
+
+
+
 
 ## Installation 
 
@@ -390,7 +396,7 @@ use MOIREI\GoogleMerchantApi\Facades\OrderApi;
 public function handle(NewOrdersScoutedEvent $event)
 {
     $merchant = $event->merchant; // array key as defined in config
-    $merchant_id = $event->merchant_id; // array key as defined in config
+    $merchant_id = $event->merchant_id;
     
     foreach($event->orders as $gm_order){
         OrderApi::acknowledge($gm_order);
