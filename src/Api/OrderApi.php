@@ -283,18 +283,32 @@ class OrderApi extends AbstractApi{
      */
     public function scout(){
 
-        $response = $this->sync()->list();
-        if($response->getStatusCode() === 200){
-            $data = json_decode($response->getBody(), true);
-            if(count($resource)){
-                $orders = array_map(function($resource){
-                    return (new Order)->with($resource);
-                }, $data->resources);
-                event(new NewOrdersScoutedEvent($orders));
-            }
-        }else{
-            //
-        }
+		function handleResponse($response, $merchant, $merchant_id) {
+			if($response->getStatusCode() === 200){
+				$data = json_decode($response->getBody(), true);
+				if(count($resource)){
+					$orders = array_map(function($resource){
+						return (new Order)->with($resource);
+					}, $data->resources);
+					event(new NewOrdersScoutedEvent($orders, $merchant, $merchant_id));
+				}
+			}else{
+				//
+			}
+		}
+
+		$client = $this->sync();
+		if($merchants = config('laravel-google-merchant-api.merchants')){
+			// Backwords compatible
+			// Default to 1.0.3 config if `merchants` is not set
+			foreach($merchants as $merchant => $merchant_config){
+				$response = $client->merchant($merchant_config)->list();
+				handleResponse($response, $merchant, data_get($merchant_config, 'merchant_id'));
+			}
+		}else{
+			$response = $client->list();
+			handleResponse($response, null, config('laravel-google-merchant-api.merchant_id'));
+		}
 
         if(config('laravel-google-merchant-api.contents.orders.debug_scout', false)){
             event(new OrderContentScoutedEvent());

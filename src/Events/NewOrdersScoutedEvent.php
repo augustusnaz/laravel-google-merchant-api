@@ -11,17 +11,34 @@ class NewOrdersScoutedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $orders;
+	/**
+	 * @var array
+	 */
+	public $orders;
+
+	/**
+	 * @var string
+	 */
+    public $merchant;
+
+	/**
+	 * @var string
+	 */
+    public $merchant_id;
 
     /**
      * Create a new event instance.
      *
      * @param array $orders
+     * @param string $merchant
+     * @param string $merchant_id
      * @return void
      */
-    public function __construct(array $orders)
+    public function __construct(array $orders, $merchant = 'default', $merchant_id = null)
     {
         $this->orders = $orders;
+        $this->merchant = $merchant;
+        $this->merchant_id = $merchant_id;
     }
 
     /**

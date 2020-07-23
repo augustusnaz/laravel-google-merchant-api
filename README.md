@@ -389,6 +389,9 @@ use MOIREI\GoogleMerchantApi\Facades\OrderApi;
 ...
 public function handle(NewOrdersScoutedEvent $event)
 {
+    $merchant = $event->merchant; // array key as defined in config
+    $merchant_id = $event->merchant_id; // array key as defined in config
+    
     foreach($event->orders as $gm_order){
         OrderApi::acknowledge($gm_order);
 
