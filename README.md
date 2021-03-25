@@ -114,7 +114,7 @@ ProductApi::merchant('my-pet-store')->insert($product);
         'my-pet-store' => [
 			'app_name' => config('app.name'),
 			'merchant_id' => '000000000',
-			'client_credentials_path' => 'storage/.../my-pet-store-credentials.json',
+			'client_credentials_path' => storage_path('app/my-pet-store-credentials.json'),
 		]
     ],
 ...
@@ -126,7 +126,7 @@ Or
 ProductApi::merchant([
     'app_name' => 'My Pet Store',
     'merchant_id' => '000000000',
-    'client_credentials_path' => 'storage/.../my-pet-store-credentials.json'
+    'client_credentials_path' => storage_path('app/my-pet-store-credentials.json')
 ])->insert($product);
 ```
 
