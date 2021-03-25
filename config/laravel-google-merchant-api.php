@@ -78,7 +78,7 @@ return [
 			 * This file should only be accessible to your application.
 			 */
 
-			'client_credentials_path' => 'storage/app/google-merchant-api/service-account-credentials.json',
+			'client_credentials_path' => storage_path('app/google-merchant-api/moirei-store-credentials.json'),
 		]
     ],
 
