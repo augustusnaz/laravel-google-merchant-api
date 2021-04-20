@@ -99,7 +99,7 @@ abstract class AbstractApi{
 		$this->endpoint = $endpoint;
 		$this->mode = $mode;
 
-		if(!is_string($config = config('laravel-google-merchant-api.default_merchant'))){
+		if(!is_null(config('laravel-google-merchant-api.default_merchant'))){
 
 			// Backwords compatible
 			// Default to 1.0.3 config if `default_merchant` is not set
@@ -108,8 +108,8 @@ abstract class AbstractApi{
 				'merchant_id' => config('laravel-google-merchant-api.merchant_id'),
 				'client_credentials_path' => config('laravel-google-merchant-api.client_credentials_path'),
 			];
-		}
-		$this->merchant($config);
+            $this->merchant($config);
+        }
 	}
 
 	/**
