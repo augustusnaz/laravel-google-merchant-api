@@ -102,7 +102,7 @@ abstract class AbstractApi
 
 		// Backwords compatible
 		if (is_string(config('laravel-google-merchant-api.default_merchant'))) {
-			$config = config('laravel-google-merchant-api.default_merchant'))
+			$config = config('laravel-google-merchant-api.default_merchant');
 		} else if (!is_null(config('laravel-google-merchant-api.merchant_id'))) {
 			// Default to 1.0.3 config if `default_merchant` is not set
 			$config = [
