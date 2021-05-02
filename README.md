@@ -11,7 +11,7 @@ use MOIREI\GoogleMerchantApi\Facades\ProductApi;
 use MOIREI\GoogleMerchantApi\Facades\OrderApi;
 
 ...
-    
+
 ProductApi::insert(function($product){
     $product->offerId(1)
         	->title('Purple Shoes')
@@ -62,7 +62,7 @@ Although backwards compatible, be sure to update your config to be able to use m
 
 
 
-## Installation 
+## Installation
 
 Via composer:
 
@@ -144,7 +144,7 @@ To pass an array or a model, the attributes relationships must be defined in the
 
 #### Insert
 
-The insert method creates a new content, as well as updates an old content if the `channel`, `contentLanguage`, `targetCountry` and `offerId` are the same. 
+The insert method creates a new content, as well as updates an old content if the `channel`, `contentLanguage`, `targetCountry` and `offerId` are the same.
 
 ```php
 $attributes = [
@@ -220,7 +220,7 @@ For setting custom Product contents (`customAttributes`), you're probably better
 
 **With Events & Listeners**:
 
-The provided event and listener can be setup such that when your application creates or updates a model, the product content is automatically inserted. 
+The provided event and listener can be setup such that when your application creates or updates a model, the product content is automatically inserted.
 
 To set this up, add the following snippet to your eloquent mode.  The `product` variable can be a model or an array.
 
@@ -228,7 +228,7 @@ To set this up, add the following snippet to your eloquent mode.  The `product` 
 use MOIREI\GoogleMerchantApi\Events\ProductCreatedOrUpdatedEvent;
 
 ...
-    
+
 /**
  * The "booting" method of the model.
  *
@@ -241,7 +241,7 @@ protected static function boot() {
     static::created(function(Product $product){
         // perhaps a logic to ignore drafts and private products
         if($product->is_active && (config('app.env') === 'production')){
-        	event(new ProductCreatedOrUpdatedEvent($product));   
+        	event(new ProductCreatedOrUpdatedEvent($product));
         }
     });
 
@@ -253,7 +253,7 @@ protected static function boot() {
                 $gm_product->with($product)
                     	   ->preorder()
                     	   ->availabilityDate($product->preorder_date);
-            }));   
+            }));
         }
     });
 }
@@ -265,7 +265,7 @@ Next, define the events relationship in `EventServiceProvider.php`.
 use MOIREI\GoogleMerchantApi\Listeners\ProductCreatedOrUpdatedListener;
 
 ...
-    
+
 /**
  * The event listener mappings for the application.
  *
@@ -323,16 +323,16 @@ To set up with the event listener, add the following to your eloquent model:
 use MOIREI\GoogleMerchantApi\Events\ProductDeletedEvent;
 
 ...
-    
+
 protected static function boot() {
     parent::boot();
 
     ...
-        
+
     // when a product is deleted
     static::deleted(function(Product $product){
         if(config('app.env') === 'production'){
-        	event(new ProductDeletedEvent($product)); 
+        	event(new ProductDeletedEvent($product));
         }
     });
 }
@@ -344,7 +344,7 @@ Then define the relationship in `EventServiceProvider.php`:
 use MOIREI\GoogleMerchantApi\Listeners\ProductDeletedListener;
 
 ...
-    
+
 protected $listen = [
     ...,
     ProductDeletedEvent::class => [
@@ -397,7 +397,7 @@ public function handle(NewOrdersScoutedEvent $event)
 {
     $merchant = $event->merchant; // array key as defined in config
     $merchant_id = $event->merchant_id;
-    
+
     foreach($event->orders as $gm_order){
         OrderApi::acknowledge($gm_order);
 
@@ -407,16 +407,16 @@ public function handle(NewOrdersScoutedEvent $event)
             $quantity = $line_item['quantityOrdered'];
             $shipping = $line_item['shippingDetails'];
             $delivery_date = $shipping['deliverByDate']->diffForHumans();
-            
+
             // register new order item
         }
-		
+
         // register new order
     }
 }
 ```
 
-**Notes**: 
+**Notes**:
 
 * Accessing the `lineItems` will automatically resolve and attach the corresponding model to each item. Of course this assumes your inserted products' `offerId` correspond to the model's ID & primary key.
 * If you haven't already started Laravel scheduler, you'll need to add the following Cron entry to your server. `* * * * * php artisan schedule:run >> /dev/null 2>&1`.
@@ -430,7 +430,7 @@ The OrderApi class provide a way of calling some of the sandbox operations. Exam
 OrderApi::sandbox()->create(function($order){
     $order->shippingCost(30)
           ->shippingOption('economy')
-          ->predefinedEmail('pog.dwight.schrute@gmail.com') 
+          ->predefinedEmail('pog.dwight.schrute@gmail.com')
           ->predefinedDeliveryAddress('dwight');
 })
 ```
@@ -443,7 +443,7 @@ OrderApi::sandbox()->testCreate();
 
 to use a preset example.
 
-Implemented sandbox actions: 
+Implemented sandbox actions:
 
 | Function       | Sandbox Action   |
 | -------------- | ---------------- |
@@ -472,7 +472,7 @@ Methods that throw exceptions
 
   throws `MOIREI\GoogleMerchantApi\Exceptions\ProductContentAttributesUndefined` if the supplied attributes is not a Model or array.
 
-* The `insert`, `get`, `delete`, `list`, `listAcknowledged` and `scout` methods in the API classes will throw `GuzzleHttp\Exception\ClientException` if the client request is corrupted, fails, not defined or not authorised. 
+* The `insert`, `get`, `delete`, `list`, `listAcknowledged` and `scout` methods in the API classes will throw `GuzzleHttp\Exception\ClientException` if the client request is corrupted, fails, not defined or not authorised.
 
 * The `MOIREI\GoogleMerchantApi\Exceptions\Invalid**Input` exceptions are thrown if an unresolvable entity is passed as a content attribute.
 
@@ -485,7 +485,7 @@ Exceptions should be handled using the `catch` function. If making synchronous c
 ## Design Notes
 
 * Insert, List, Get, Delete methods will always return a clone of the original instance if using the default asynchronous feature. This allows the then, otherwise, and catch callbacks of multiple requests to not override. These methods return a Guzzle response if set to synchronous mode.
-* If the delete method is called and the resolved content ID is invalid, it returns without making any requests or throwing any errors. If the get method, it returns a list of products or orders. 
+* If the delete method is called and the resolved content ID is invalid, it returns without making any requests or throwing any errors. If the get method, it returns a list of products or orders.
 * A valid product content ID follows the pattern *online:en:AU:1* i.e. `channel:contentLanguage:targetCountry:offerId`. This ID is of course auto generated; and the attributes, except for `offerId`, have default values.
 * Requests can take up to 2 hours before they reflect on your Google Merchant Center. Patience!
 * Unlike the ProductApi or OrderApi classes, the events constructor may take a Model, array or callback.
@@ -523,7 +523,7 @@ This package is intended to provide a Laravel solution for the Google Shopping A
 ## Credits
 
 - [Augustus Okoye](https://github.com/augustusnaz)
-- [All Contributors](https://github.com/spatie/laravel-dashboard/contributors)
+- [All Contributors](https://github.com/augustusnaz/laravel-google-merchant-api/graphs/contributors)
 
 
 
