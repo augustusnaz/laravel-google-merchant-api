@@ -523,6 +523,7 @@ This package is intended to provide a Laravel solution for the Google Shopping A
 ## Credits
 
 - [Augustus Okoye](https://github.com/augustusnaz)
+- [All Contributors](https://github.com/spatie/laravel-dashboard/contributors)
 
 
 
