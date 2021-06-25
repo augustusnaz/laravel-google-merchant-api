@@ -83,7 +83,7 @@ Install the service provider (skip for Laravel>=5.5);
 Publish the config
 
 ```php
-php artisan vendor:publish --provider=MOIREI\GoogleMerchantApi\GoogleMerchantApiServiceProvider --tag="config"
+php artisan vendor:publish --tag="google-merchant-api-config"
 ```
 
 

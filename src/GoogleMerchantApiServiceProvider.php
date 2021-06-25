@@ -17,7 +17,7 @@ class GoogleMerchantApiServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/laravel-google-merchant-api.php' => base_path('config/laravel-google-merchant-api.php'),
-            ], 'config');
+            ], 'google-merchant-api-config');
         }
 
         $this->app->booted(function () {
