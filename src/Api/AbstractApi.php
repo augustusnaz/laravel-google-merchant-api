@@ -209,7 +209,7 @@ abstract class AbstractApi
 	{
 		if ('GET' === $this->request_method || 'DELETE' === $this->request_method) {
 			return [
-				'param' => json_encode($this->request_params)
+				'query' => $this->request_params
 			];
 		} else {
 			return [

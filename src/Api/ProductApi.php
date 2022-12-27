@@ -41,8 +41,8 @@ class ProductApi extends AbstractApi{
 	 * @throws \GuzzleHttp\Exception\ClientException
      * @throws MOIREI\GoogleMerchantApi\Exceptions\InvalidProductInput
      */
-    public function list(){
-        return $this->get();
+    public function list($pageToken = null, $maxResults = 25){
+        return $this->get(null, ['pageToken' => $pageToken, 'maxResults' => $maxResults]);
     }
 
     /**
@@ -65,6 +65,7 @@ class ProductApi extends AbstractApi{
         $instance->setRequestArgs( array(
 			'method' => 'GET',
 			'path'   => $id,
+            'params' => $params,
 		) );
 
 		$instance->clearCallbacks();
